@@ -437,6 +437,22 @@ cat > "$HOME/agsbx/sb.json" <<EOF
   "inbounds": [
 EOF
 insuuid
+
+
+
+# ========= 证书
+logan_ym=$(cat /root/ygkkkca/ca.log 2>/dev/null)
+logan_private_key='/root/ygkkkca/private.key'
+logan_cert='/root/ygkkkca/cert.crt'
+if [ -z logan_ym ] || [ ! -f $logan_private_key ] || [ ! -f $logan_cert ]; then
+    logan_ym=''
+    logan_cert=''
+    logan_private_key=''
+fi
+
+# ====================================
+
+
 command -v openssl >/dev/null 2>&1 && openssl ecparam -genkey -name prime256v1 -out "$HOME/agsbx/private.key" >/dev/null 2>&1
 command -v openssl >/dev/null 2>&1 && openssl req -new -x509 -days 36500 -key "$HOME/agsbx/private.key" -out "$HOME/agsbx/cert.pem" -subj "/CN=www.bing.com" >/dev/null 2>&1
 if [ ! -f "$HOME/agsbx/private.key" ]; then
