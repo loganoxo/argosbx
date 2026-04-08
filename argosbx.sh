@@ -1102,7 +1102,7 @@ fi
 
 # ====================== 脚本每天自动重启
 sed -i '/agsbx res/d' /tmp/crontab.tmp
-echo '30 0 * * * sleep 60 && /bin/sh -c "nohup $HOME/bin/agsbx res >/dev/null 2>&1 &"' >> /tmp/crontab.tmp
+echo '10 0 * * * sleep 60 && /bin/sh -c "nohup $HOME/bin/agsbx res >/dev/null 2>&1 &"' >> /tmp/crontab.tmp
 
 # ==================================
 
