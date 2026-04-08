@@ -29,7 +29,9 @@ trim_trailing_whitespace = false
 # 对所有 js html, less, css, json 文件生效
 [*.{js,html,less,css,json}]
 # 取消前面或从父级目录继承的indent_size
-# indent_size = unset
+indent_size = 2
+tab_width = 2
+trim_trailing_whitespace = false
 
 # 对 package.json 生效
 [package.json]
