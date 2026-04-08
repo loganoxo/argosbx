@@ -1407,6 +1407,7 @@ crontab -l > /tmp/crontab.tmp 2>/dev/null
 sed -i '/agsbx\/sing-box/d' /tmp/crontab.tmp
 sed -i '/agsbx\/xray/d' /tmp/crontab.tmp
 sed -i '/agsbx\/cloudflared/d' /tmp/crontab.tmp
+sed -i '/agsbx res/d' /tmp/crontab.tmp
 crontab /tmp/crontab.tmp >/dev/null 2>&1
 rm /tmp/crontab.tmp
 rm -rf  "$HOME/bin/agsbx"
