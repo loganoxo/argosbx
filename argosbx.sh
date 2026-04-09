@@ -156,13 +156,13 @@ case "$warp" in *x6*) xryx='ForceIPv6' ;; *x*) xryx='ForceIPv4v6' ;; *) xryx='Fo
 fi
 }
 upxray(){
-url="https://github.com/yonggekkk/argosbx/releases/download/argosbx/xray-$cpu"; out="$HOME/agsbx/xray"; (command -v curl >/dev/null 2>&1 && curl -Lo "$out" -# --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -O "$out" --tries=2 "$url")
+url="https://github.com/yonggekkk/loganoxo/releases/download/argosbx/xray-$cpu"; out="$HOME/agsbx/xray"; (command -v curl >/dev/null 2>&1 && curl -Lo "$out" -# --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -O "$out" --tries=2 "$url")
 chmod +x "$HOME/agsbx/xray"
 sbcore=$("$HOME/agsbx/xray" version 2>/dev/null | awk '/^Xray/{print $2}')
 echo "已安装Xray正式版内核：$sbcore"
 }
 upsingbox(){
-url="https://github.com/yonggekkk/argosbx/releases/download/argosbx/sing-box-$cpu"; out="$HOME/agsbx/sing-box"; (command -v curl>/dev/null 2>&1 && curl -Lo "$out" -# --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -O "$out" --tries=2 "$url")
+url="https://github.com/yonggekkk/loganoxo/releases/download/argosbx/sing-box-$cpu"; out="$HOME/agsbx/sing-box"; (command -v curl>/dev/null 2>&1 && curl -Lo "$out" -# --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -O "$out" --tries=2 "$url")
 chmod +x "$HOME/agsbx/sing-box"
 sbcore=$("$HOME/agsbx/sing-box" version 2>/dev/null | awk '/version/{print $NF}')
 echo "已安装Sing-box正式版内核：$sbcore"
@@ -455,8 +455,8 @@ if [ -z "$logan_ym" ] || [ ! -f $logan_private_key ] || [ ! -f $logan_cert ]; th
     command -v openssl >/dev/null 2>&1 && openssl ecparam -genkey -name prime256v1 -out "$logan_private_key" >/dev/null 2>&1
     command -v openssl >/dev/null 2>&1 && openssl req -new -x509 -days 36500 -key "$logan_private_key" -out "$logan_cert" -subj "/CN=${logan_ym}" >/dev/null 2>&1
     if [ ! -f "$logan_private_key" ]; then
-    url="https://github.com/yonggekkk/argosbx/releases/download/argosbx/private.key"; out="$logan_private_key"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
-    url="https://github.com/yonggekkk/argosbx/releases/download/argosbx/cert.pem"; out="$logan_cert"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
+    url="https://github.com/loganoxo/argosbx/releases/download/argosbx/private.key"; out="$logan_private_key"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
+    url="https://github.com/loganoxo/argosbx/releases/download/argosbx/cert.pem"; out="$logan_cert"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
     fi
 fi
 # ====================================
