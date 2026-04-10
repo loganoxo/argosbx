@@ -1104,7 +1104,7 @@ fi
 
 # ====================== 脚本每天自动重启
 sed -i '/agsbx res/d' /tmp/crontab.tmp
-echo "10 4 * * * sleep 60 && /bin/bash $HOME/bin/agsbx res >/dev/null 2>&1" >> /tmp/crontab.tmp
+echo "10 4 * * * sleep 60 && (echo; echo; echo \"[\$(date -Is)] 脚本开始重启\"; /bin/bash \"$HOME/bin/agsbx\" res) >> \"$HOME/logan_res.log\" 2>&1" >> /tmp/crontab.tmp
 
 # ==================================
 
