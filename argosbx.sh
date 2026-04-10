@@ -1430,20 +1430,24 @@ fi
 xrestart(){
 kill -15 $(pgrep -f 'agsbx/x' 2>/dev/null) >/dev/null 2>&1
 if pidof systemd >/dev/null 2>&1; then
+echo "xrestart 执行了 systemctl" >> "/root/a.log"
 systemctl restart xr >/dev/null 2>&1
 elif command -v rc-service >/dev/null 2>&1; then
 rc-service xray restart >/dev/null 2>&1
 else
+echo "xrestart 执行了 nohup" >> "/root/a.log"
 nohup $HOME/agsbx/xray run -c $HOME/agsbx/xr.json >/dev/null 2>&1 &
 fi
 }
 sbrestart(){
 kill -15 $(pgrep -f 'agsbx/s' 2>/dev/null) >/dev/null 2>&1
 if pidof systemd >/dev/null 2>&1; then
+echo "sbrestart 执行了 systemctl" >> "/root/a.log"
 systemctl restart sb >/dev/null 2>&1
 elif command -v rc-service >/dev/null 2>&1; then
 rc-service sing-box restart >/dev/null 2>&1
 else
+echo "sbrestart 执行了 nohup" >> "/root/a.log"
 nohup $HOME/agsbx/sing-box run -c $HOME/agsbx/sb.json >/dev/null 2>&1 &
 fi
 }
