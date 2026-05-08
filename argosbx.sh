@@ -90,16 +90,19 @@ logan_private_key='/root/ygkkkca/private.key'
 logan_cert='/root/ygkkkca/cert.crt'
 logan_ins=0
 
-if [ -z "$logan_ym" ] || [ ! -f $logan_private_key ] || [ ! -f $logan_cert ]; then
+if [ -z "$logan_ym" ] || [ ! -f "$logan_private_key" ] || [ ! -f "$logan_cert" ]; then
     logan_ym='www.bing.com'
     logan_private_key="$HOME/agsbx/private.key"
     logan_cert="$HOME/agsbx/cert.pem"
     logan_ins=1
-    command -v openssl >/dev/null 2>&1 && openssl ecparam -genkey -name prime256v1 -out "$logan_private_key" >/dev/null 2>&1
-    command -v openssl >/dev/null 2>&1 && openssl req -new -x509 -days 36500 -key "$logan_private_key" -out "$logan_cert" -subj "/CN=${logan_ym}" >/dev/null 2>&1
-    if [ ! -f "$logan_private_key" ]; then
-    url="https://github.com/loganoxo/argosbx/releases/download/argosbx/private.key"; out="$logan_private_key"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
-    url="https://github.com/loganoxo/argosbx/releases/download/argosbx/cert.pem"; out="$logan_cert"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
+    
+    if [ ! -f "$logan_private_key" ] || [ ! -f "$logan_cert" ]; then
+        command -v openssl >/dev/null 2>&1 && openssl ecparam -genkey -name prime256v1 -out "$logan_private_key" >/dev/null 2>&1
+        command -v openssl >/dev/null 2>&1 && openssl req -new -x509 -days 36500 -key "$logan_private_key" -out "$logan_cert" -subj "/CN=${logan_ym}" >/dev/null 2>&1
+        if [ ! -f "$logan_private_key" ]; then
+            url="https://github.com/loganoxo/argosbx/releases/download/argosbx/private.key"; out="$logan_private_key"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
+            url="https://github.com/loganoxo/argosbx/releases/download/argosbx/cert.pem"; out="$logan_cert"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
+        fi
     fi
 fi
 # ====================================
