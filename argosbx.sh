@@ -1297,7 +1297,7 @@ fi
 if grep anytls-sb "$HOME/agsbx/sb.json" >/dev/null 2>&1; then
 echo "💣【 AnyTLS 】节点信息如下："
 port_an=$(cat "$HOME/agsbx/port_an")
-an_link="anytls://$uuid@$server_ip:$port_an?insecure=$logan_ins&allowInsecure=$logan_ins#${sxname}anytls-$hostname"
+an_link="anytls://$uuid@$server_ip:$port_an?sni=$logan_ym&insecure=$logan_ins&allowInsecure=$logan_ins#${sxname}anytls-$hostname"
 echo "$an_link" >> "$HOME/agsbx/jh.txt"
 echo "$an_link"
 echo
