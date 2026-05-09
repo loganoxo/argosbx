@@ -1204,6 +1204,7 @@ fi
 }
 ipchange
 rm -rf "$HOME/agsbx/jh.txt"
+rm -rf "$HOME/agsbx/logan-node.txt"
 uuid=$(cat "$HOME/agsbx/uuid")
 server_ip=$(cat "$HOME/agsbx/server_ip.log")
 sxname=$(cat "$HOME/agsbx/name" 2>/dev/null)
