@@ -1328,9 +1328,9 @@ echo "$hy2_link"
 echo
 
 # ========================== 端口跳跃
-logan_mports=$(iptables-save -t nat 2>/dev/null | grep "PREROUTING" | grep "${port_hy2}" | sed -n 's/.*--dport[s]* \([0-9,:]*\).*/\1/p' | head -n 1)
+logan_mports=$(iptables-save -t nat 2>/dev/null | grep "PREROUTING" | grep -w "${port_hy2}" | sed -n 's/.*--dport[s]* \([0-9,:]*\).*/\1/p' | head -n 1)
 if [ -z "$logan_mports" ]; then
-    logan_mports=$(ip6tables-save -t nat 2>/dev/null | grep "PREROUTING" | grep "${port_hy2}" | sed -n 's/.*--dport[s]* \([0-9,:]*\).*/\1/p' | head -n 1)
+    logan_mports=$(ip6tables-save -t nat 2>/dev/null | grep "PREROUTING" | grep -w "${port_hy2}" | sed -n 's/.*--dport[s]* \([0-9,:]*\).*/\1/p' | head -n 1)
 fi
 if [ -n "$logan_mports" ]; then
     echo "💣【 Hysteria2 端口跳跃】节点信息如下："
