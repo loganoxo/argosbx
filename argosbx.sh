@@ -1336,6 +1336,7 @@ if [ -n "$logan_mports" ]; then
     echo "💣【 Hysteria2 端口跳跃】节点信息如下："
     # 格式转换: 将 iptables 语法中的冒号 (:) 替换为 hy2 语法中的中划线 (-)
     logan_mports_str=$(echo "$logan_mports" | tr ':' '-')
+    # 精准判断是否已包含目标端口, 避免重复拼接
     if ! [[ "$logan_mports_str" =~ (^|,)${port_hy2}(,|-|$) ]]; then
         logan_mports_str="${port_hy2},${logan_mports_str}"
     fi
