@@ -1450,7 +1450,7 @@ logan_nodes=(
             echo "$item"
         fi
     done
-} > output.txt
+} > "$HOME/agsbx/logan-nodes.txt"
 # ==========================
 
 }
