@@ -1340,7 +1340,7 @@ if [ -n "$logan_mports" ]; then
     if ! [[ "$logan_mports_str" =~ (^|,)${port_hy2}(,|-|$) ]]; then
         logan_mports_str="${port_hy2},${logan_mports_str}"
     fi
-    hy2_mports_link="hysteria2://$uuid@$server_ip:$port_hy2?security=tls&alpn=h3&insecure=$logan_ins&mport=$logan_mports_str&sni=$logan_ym#${sxname}hy2-$hostname"
+    hy2_mports_link="hysteria2://${uuid}@${server_ip}:${port_hy2}?security=tls&alpn=h3&insecure=${logan_ins}&mport=${logan_mports_str}&sni=${logan_ym}#${sxname}hy2-${hostname}"
     echo "$hy2_mports_link" >> "$HOME/agsbx/jh.txt"
     echo "$hy2_mports_link"
     echo
