@@ -1326,6 +1326,27 @@ hy2_link="hysteria2://$uuid@$server_ip:$port_hy2?security=tls&alpn=h3&insecure=$
 echo "$hy2_link" >> "$HOME/agsbx/jh.txt"
 echo "$hy2_link"
 echo
+
+# ========================== 端口跳跃
+logan_mports=$(iptables-save -t nat 2>/dev/null | grep "PREROUTING" | grep "${port_hy2}" | sed -n 's/.*--dport[s]* \([0-9,:]*\).*/\1/p' | head -n 1)
+if [ -z "$logan_mports" ]; then
+    logan_mports=$(ip6tables-save -t nat 2>/dev/null | grep "PREROUTING" | grep "${port_hy2}" | sed -n 's/.*--dport[s]* \([0-9,:]*\).*/\1/p' | head -n 1)
+fi
+if [ -n "$logan_mports" ]; then
+    echo "💣【 Hysteria2 端口跳跃】节点信息如下："
+    # 格式转换: 将 iptables 语法中的冒号 (:) 替换为 hy2 语法中的中划线 (-)
+    logan_mports_str=$(echo "$logan_mports" | tr ':' '-')
+    if ! [[ "$logan_mports_str" =~ (^|,)${port_hy2}(,|-|$) ]]; then
+        logan_mports_str="${port_hy2},${logan_mports_str}"
+    fi
+    hy2_mports_link="hysteria2://$uuid@$server_ip:$port_hy2?security=tls&alpn=h3&insecure=$logan_ins&mport=$logan_mports_str&sni=$logan_ym#${sxname}hy2-$hostname"
+    echo "$hy2_mports_link" >> "$HOME/agsbx/jh.txt"
+    echo "$hy2_mports_link"
+    echo
+fi
+
+# ==========================
+
 fi
 if grep tuic5-sb "$HOME/agsbx/sb.json" >/dev/null 2>&1; then
 echo "💣【 Tuic 】节点信息如下："
@@ -1348,7 +1369,7 @@ echo
 s5_link="socks5://$uuid:$uuid@$server_ip:$port_so"
 echo "$s5_link" >> "$HOME/agsbx/jh.txt"
 echo "$s5_link"
-
+echo
 fi
 argodomain=$(cat "$HOME/agsbx/sbargoym.log" 2>/dev/null)
 [ -z "$argodomain" ] && argodomain=$(grep -a trycloudflare.com "$HOME/agsbx/argo.log" 2>/dev/null | awk 'NR==2{print}' | awk -F// '{print $2}' | awk '{print $1}')
