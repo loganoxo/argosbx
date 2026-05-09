@@ -1204,7 +1204,7 @@ fi
 }
 ipchange
 rm -rf "$HOME/agsbx/jh.txt"
-rm -rf "$HOME/agsbx/logan-node.txt"
+rm -rf "$HOME/agsbx/logan-nodes.txt"
 uuid=$(cat "$HOME/agsbx/uuid")
 server_ip=$(cat "$HOME/agsbx/server_ip.log")
 sxname=$(cat "$HOME/agsbx/name" 2>/dev/null)
@@ -1344,6 +1344,11 @@ echo "客户端端口：$port_so"
 echo "客户端用户名：$uuid"
 echo "客户端密码：$uuid"
 echo
+
+s5_link="socks5://$uuid:$uuid@$server_ip:$port_so"
+echo "$s5_link" >> "$HOME/agsbx/jh.txt"
+echo "$s5_link"
+
 fi
 argodomain=$(cat "$HOME/agsbx/sbargoym.log" 2>/dev/null)
 [ -z "$argodomain" ] && argodomain=$(grep -a trycloudflare.com "$HOME/agsbx/argo.log" 2>/dev/null | awk 'NR==2{print}' | awk -F// '{print $2}' | awk '{print $1}')
@@ -1407,6 +1412,25 @@ echo "聚合节点信息，请进入 $HOME/agsbx/jh.txt 文件目录查看或者
 echo "========================================================="
 echo "相关快捷方式如下：(首次安装成功后需重连SSH，agsbx快捷方式才可生效)"
 showmode
+
+# ========================== 节点顺序调整
+logan_nodes=(
+    "${vmatls_link1}" "${vwatls_link1}" "${vl_vx_cdn_link}" "${vl_vw_cdn_link}" "${vm_cdn_link}"
+    "${an_link}" "${ar_link}"
+    "${hy2_link}" "${hy2_mports_link}" "${tuic5_link}"
+    "${vl_link}" "${vl_xh_link}" "${vl_vx_link}" "${vl_vw_link}"
+    "${ss_link}" "${vm_link}" "${s5_link}"
+)
+
+{
+    for item in "${logan_nodes[@]}"; do
+        if [ -n "$item" ]; then
+            echo "$item"
+        fi
+    done
+} > output.txt
+# ==========================
+
 }
 cleandel(){
 for P in /proc/[0-9]*; do if [ -L "$P/exe" ]; then TARGET=$(readlink -f "$P/exe" 2>/dev/null); if echo "$TARGET" | grep -qE '/agsbx/c|/agsbx/s|/agsbx/x'; then PID=$(basename "$P"); kill "$PID" 2>/dev/null; fi; fi; done
