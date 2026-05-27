@@ -8,10 +8,10 @@ root = true
 [*]
 # 空格缩进,可选"space"、"tab"
 indent_style = space
-# 缩进空格为4个
-indent_size = 4
+# 缩进空格为2个
+indent_size = 2
 # 定义用于表示制表符的列数的整数,默认为indent_size的值,通常不需要指定
-tab_width = 4
+tab_width = 2
 # 结尾换行符，可选"lf换行符(unix默认\n)"、"cr回车符(\n)"、"crlf回车换行符(windows默认\r\n)"
 end_of_line = lf
 # 文件编码是 utf-8
@@ -21,6 +21,15 @@ trim_trailing_whitespace = true
 # 文件末尾添加一个空行
 insert_final_newline = true
 
+[*.java]
+indent_size = 2
+tab_width = 2
+
+[*.applescript]
+indent_size = 2
+tab_width = 2
+indent_style = tab
+
 # 对所有 md 文件生效
 [*.md]
 # 保留行末的空格,markdown中行尾两个空格是严格模式下的换行
@@ -29,9 +38,7 @@ trim_trailing_whitespace = false
 # 对所有 js html, less, css, json 文件生效
 [*.{js,html,less,css,json}]
 # 取消前面或从父级目录继承的indent_size
-indent_size = 2
-tab_width = 2
-trim_trailing_whitespace = false
+# indent_size = unset
 
 # 对 package.json 生效
 [package.json]
@@ -46,7 +53,3 @@ trim_trailing_whitespace = false
 [*.{yml,yaml}]
 indent_size = 2
 tab_width = 2
-
-
-[*.sh]
-trim_trailing_whitespace = false
