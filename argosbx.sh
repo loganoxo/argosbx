@@ -1768,18 +1768,16 @@ elif [ "$1" = "res" ]; then
     *"/agsbx/c"*)
       kill "$(basename "$P")" 2>/dev/null
       kill -15 $(pgrep -f 'agsbx/c' 2>/dev/null) >/dev/null 2>&1
-      if { pidof systemd >/dev/null 2>&1 || [ "$(ps -p 1 -o comm=)" = "systemd" ]; }; then
-        systemctl restart argo >/dev/null 2>&1
-      elif command -v rc-service >/dev/null 2>&1; then
-        rc-service argo restart >/dev/null 2>&1
-      else
-        if [ -e "$HOME/agsbx/sbargotoken.log" ]; then
-          if ! { pidof systemd >/dev/null 2>&1 || [ "$(ps -p 1 -o comm=)" = "systemd" ]; } && ! command -v rc-service >/dev/null 2>&1; then
-            nohup $HOME/agsbx/cloudflared tunnel --no-autoupdate --edge-ip-version auto --protocol http2 run --token $(cat $HOME/agsbx/sbargotoken.log 2>/dev/null) >/dev/null 2>&1 &
-          fi
+      if [ -e "$HOME/agsbx/sbargotoken.log" ]; then
+        if { pidof systemd >/dev/null 2>&1 || [ "$(ps -p 1 -o comm=)" = "systemd" ]; }; then
+          systemctl restart argo >/dev/null 2>&1
+        elif command -v rc-service >/dev/null 2>&1; then
+          rc-service argo restart >/dev/null 2>&1
         else
-          nohup $HOME/agsbx/cloudflared tunnel --url http://localhost:$(cat $HOME/agsbx/argoport.log 2>/dev/null) --edge-ip-version auto --no-autoupdate --protocol http2 >$HOME/agsbx/argo.log 2>&1 &
+          nohup $HOME/agsbx/cloudflared tunnel --no-autoupdate --edge-ip-version auto --protocol http2 run --token $(cat $HOME/agsbx/sbargotoken.log 2>/dev/null) >/dev/null 2>&1 &
         fi
+      else
+        nohup $HOME/agsbx/cloudflared tunnel --url http://localhost:$(cat $HOME/agsbx/argoport.log 2>/dev/null) --edge-ip-version auto --no-autoupdate --protocol http2 >$HOME/agsbx/argo.log 2>&1 &
       fi
       ;;
     esac
@@ -1820,6 +1818,59 @@ if ! find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -
     echo "iptables执行开放所有端口"
   fi
   ins
+  if [ -n "$sub" ]; then
+    subtokenipsub() {
+      if [ -z "$subid" ]; then
+        subtoken="$(cat "$HOME/agsbx/uuid")"
+      else
+        subtoken="$subid"
+      fi
+      rm -rf $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"
+      echo $subtoken >$HOME/agsbx/subtoken.log
+    }
+    subportipsub() {
+      if [ -z "$subpt" ]; then
+        if [ -n "$(cat "$HOME/agsbx/subport.log" 2>/dev/null)" ]; then
+          subport=$(cat $HOME/agsbx/subport.log)
+        else
+          subport=$(shuf -i 10000-65535 -n 1)
+        fi
+      else
+        subport="$subpt"
+      fi
+      echo $subport >$HOME/agsbx/subport.log
+    }
+    subtokenipsub && subportipsub
+    echo "请稍后…………"
+    kill -15 $(pgrep -f 'websbx' 2>/dev/null) >/dev/null 2>&1
+    mkdir -p $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"
+#    ln -sf $HOME/agsbx/clmi.yaml $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/clmi.yaml
+#    ln -sf $HOME/agsbx/sbox.json $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/sbox.json
+#    ln -sf $HOME/agsbx/jhsub.txt $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/jhsub.txt
+    ln -sf $HOME/agsbx/logan-nodes.txt $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/logan-nodes.txt
+    if command -v apk >/dev/null 2>&1; then
+      busybox-extras httpd -f -p "$(cat $HOME/agsbx/subport.log 2>/dev/null)" -h $HOME/websbx >/dev/null 2>&1 &
+    else
+      busybox httpd -f -p "$(cat $HOME/agsbx/subport.log 2>/dev/null)" -h $HOME/websbx >/dev/null 2>&1 &
+    fi
+    sleep 5
+    if command -v apk >/dev/null 2>&1; then
+      cat >/etc/local.d/alpinesubsbx.start <<EOF
+#!/bin/bash
+sleep 10
+busybox-extras httpd -f -p \$(cat $HOME/agsbx/subport.log 2>/dev/null) -h $HOME/websbx > /dev/null 2>&1 &
+EOF
+      chmod +x /etc/local.d/alpinesubsbx.start
+      rc-update add local default >/dev/null 2>&1
+    else
+      crontab -l 2>/dev/null >/tmp/crontab.tmp
+      sed -i '/websbx/d' /tmp/crontab.tmp
+      echo '@reboot sleep 10 && /bin/bash -c "busybox httpd -f -p $(cat $HOME/agsbx/subport.log 2>/dev/null) -h $HOME/websbx > /dev/null 2>&1 &"' >>/tmp/crontab.tmp
+      crontab /tmp/crontab.tmp >/dev/null 2>&1
+      rm /tmp/crontab.tmp
+    fi
+    echo "本地IP订阅链接已更新完成"
+  fi
   cip
   echo
 else
