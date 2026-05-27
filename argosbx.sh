@@ -71,18 +71,19 @@ arm64|aarch64) cpu=arm64;;
 amd64|x86_64) cpu=amd64;;
 *) echo "目前脚本不支持$(uname -m)架构" && exit
 esac
-mkdir -p "$HOME/agsbx"
-if [ ! -f sbx_update ]; then
-echo "执行脚本中，请稍后"
-if command -v apk >/dev/null 2>&1; then
-apk update >/dev/null 2>&1
-apk add gcompat libc6-compat >/dev/null 2>&1
-elif command -v apt >/dev/null 2>&1; then
-apt update >/dev/null 2>&1 && apt install coreutils util-linux -y >/dev/null 2>&1
-fi
-touch sbx_update
-fi
 
+if [ "$1" != "del" ]; then
+    mkdir -p "$HOME/agsbx"
+    if [ ! -f sbx_update ]; then
+        echo "执行必要的脚本依赖中，请稍等10秒……"
+        if command -v apk >/dev/null 2>&1; then
+            apk update >/dev/null 2>&1 && apk add --no-cache bash busybox-extras gcompat libc6-compat iptables >/dev/null 2>&1
+        elif command -v apt >/dev/null 2>&1; then
+            apt update >/dev/null 2>&1 && apt install -y busybox coreutils util-linux iptables cron >/dev/null 2>&1
+        fi
+        touch sbx_update
+    fi
+fi
 
 # ========= acme证书
 logan_ym=$(cat /root/ygkkkca/ca.log 2>/dev/null)
