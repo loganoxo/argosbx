@@ -1107,7 +1107,19 @@ if ! { pidof systemd >/dev/null 2>&1 || [ "$(ps -p 1 -o comm=)" = "systemd" ]; }
 echo '@reboot sleep 10 && /bin/sh -c "nohup $HOME/agsbx/cloudflared tunnel --no-autoupdate --edge-ip-version auto --protocol http2 run --token $(cat $HOME/agsbx/sbargotoken.log 2>/dev/null) >/dev/null 2>&1 &"' >> /tmp/crontab.tmp
 fi
 else
-echo '@reboot sleep 10 && /bin/sh -c "nohup $HOME/agsbx/cloudflared tunnel --url http://localhost:$(cat $HOME/agsbx/argoport.log) --edge-ip-version auto --no-autoupdate --protocol http2 > $HOME/agsbx/argo.log 2>&1 &"' >> /tmp/crontab.tmp
+if command -v apk >/dev/null 2>&1; then
+    cat >/etc/local.d/alpineargosbx.start <<EOF
+#!/bin/bash
+sleep 10
+nohup $HOME/agsbx/cloudflared tunnel --url http://localhost:\$(cat $HOME/agsbx/argoport.log) --edge-ip-version auto --no-autoupdate --protocol http2 > $HOME/agsbx/argo.log 2>&1 &
+sleep 10
+HOME="$HOME" $HOME/bin/agsbx list >/dev/null 2>&1
+EOF
+    chmod +x /etc/local.d/alpineargosbx.start
+    rc-update add local default >/dev/null 2>&1
+else
+    echo '@reboot sleep 10 && /bin/bash -c "nohup $HOME/agsbx/cloudflared tunnel --url http://localhost:$(cat $HOME/agsbx/argoport.log) --edge-ip-version auto --no-autoupdate --protocol http2 > $HOME/agsbx/argo.log 2>&1 & sleep 10 && bash $HOME/bin/agsbx list >/dev/null 2>&1"' >>/tmp/crontab.tmp
+fi
 fi
 fi
 
