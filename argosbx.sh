@@ -1618,6 +1618,18 @@ ${vma_link7}${vwa_link2}
   echo "---------------------------------------------------------"
   echo "$argoshow"
   echo
+  if [ -s $HOME/agsbx/subport.log ]; then
+    showsubport=$(cat $HOME/agsbx/subport.log)
+    if ps -ef 2>/dev/null | grep "$showsubport" | grep -v grep >/dev/null; then
+      showsubtoken=$(cat $HOME/agsbx/subtoken.log 2>/dev/null)
+      subip=$(cat $HOME/agsbx/server_ip.log 2>/dev/null)
+      suburl="$subip:$showsubport/$showsubtoken"
+      echo "**********************************************************"
+      echo "聚合协议本地IP订阅地址：http://$suburl/logan-nodes.txt"
+      echo "**********************************************************"
+    fi
+  fi
+  echo
   echo "---------------------------------------------------------"
   echo "聚合节点信息，请进入 $HOME/agsbx/jh.txt 文件目录查看或者运行 cat $HOME/agsbx/jh.txt 查看"
   echo "========================================================="
@@ -1651,7 +1663,7 @@ cleandel() {
       kill "$PID" 2>/dev/null
     fi
   fi; done
-  kill -15 $(pgrep -f 'agsbx/s' 2>/dev/null) $(pgrep -f 'agsbx/c' 2>/dev/null) $(pgrep -f 'agsbx/x' 2>/dev/null) >/dev/null 2>&1
+  kill -15 $(pgrep -f 'agsbx/s' 2>/dev/null) $(pgrep -f 'agsbx/c' 2>/dev/null) $(pgrep -f 'agsbx/x' 2>/dev/null) $(pgrep -f 'websbx' 2>/dev/null) >/dev/null 2>&1
   sed -i '/agsbx/d' ~/.bashrc
   sed -i '/export PATH="\$HOME\/bin:\$PATH"/d' ~/.bashrc
   . ~/.bashrc 2>/dev/null
@@ -1661,6 +1673,7 @@ cleandel() {
   sed -i '/agsbx\/xray/d' /tmp/crontab.tmp
   sed -i '/agsbx\/cloudflared/d' /tmp/crontab.tmp
   sed -i '/agsbx res/d' /tmp/crontab.tmp
+  sed -i '/websbx/d' /tmp/crontab.tmp
   crontab /tmp/crontab.tmp >/dev/null 2>&1
   rm /tmp/crontab.tmp
   rm -rf "$HOME/bin/agsbx"
@@ -1675,7 +1688,11 @@ cleandel() {
       rc-service "$svc" stop >/dev/null 2>&1
       rc-update del "$svc" default >/dev/null 2>&1
     done
-    rm -rf /etc/init.d/{sing-box,xray,argo}
+    rm -rf /etc/init.d/{sing-box,xray,argo} /etc/local.d/alpineargosbx.start /etc/local.d/alpinesubsbx.start
+#    iptables -t nat -F PREROUTING >/dev/null 2>&1
+#    netfilter-persistent save >/dev/null 2>&1
+#    rc-service iptables save >/dev/null 2>&1
+#    rc-service ip6tables save >/dev/null 2>&1
   fi
 }
 xrestart() {
@@ -1703,7 +1720,7 @@ sbrestart() {
 
 if [ "$1" = "del" ]; then
   cleandel
-  rm -rf sbx_update "$HOME/agsbx" "$HOME/agsb"
+  rm -rf sbx_update "$HOME/agsbx" "$HOME/websbx"
   echo "卸载完成"
   echo "欢迎继续使用甬哥侃侃侃ygkkk的Argosbx一键无交互小钢炮脚本💣" && sleep 2
   echo
