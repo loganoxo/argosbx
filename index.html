@@ -93,20 +93,20 @@
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto auto;
+      grid-template-rows: auto auto auto auto;
       gap: 20px;
     }
 
     @media (max-width: 1100px) {
       .grid {
         grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto;
+        grid-template-rows: auto auto auto auto auto;
       }
     }
 
     .protocol-port {
       grid-column: 1;
-      grid-row: 1 / 3;
+      grid-row: 1 / 4;
     }
 
     .outbound-warp {
@@ -114,19 +114,24 @@
       grid-row: 1;
     }
 
-    .argo-tunnel {
+    .subscription-links {
       grid-column: 2;
       grid-row: 2;
     }
 
+    .argo-tunnel {
+      grid-column: 2;
+      grid-row: 3;
+    }
+
     .shortcut-commands-card {
       grid-column: 1 / 3;
-      grid-row: 3;
+      grid-row: 4;
     }
 
     .out {
       grid-column: 1 / 3;
-      grid-row: 4;
+      grid-row: 5;
     }
 
     .card {
@@ -445,7 +450,7 @@
         </svg>
       </label>
     </div>
-    <h1>ArgoSBX小钢炮脚本💣一键SSH命令生成器 V25.11.20</h1>
+    <h1>ArgoSBX小钢炮脚本💣一键SSH命令生成器 V26.5.26</h1>
     <p>
       甬哥Github项目：
       <a href="https://github.com/yonggekkk" target="_blank">github.com/yonggekkk</a><br>
@@ -489,7 +494,7 @@
         </div>
       </div>
       <div class="protocol-group separator">
-        <h3>Xray/Singbox自动分配协议：</h3>
+        <h3>自动(已选Xray则用Xray，否则Singbox)：</h3>
         <div class="protocol-grid">
           <label><input type="checkbox" data-proto="sopt"> Socks5 <span class="pill">sopt</span></label><input
           type="text" placeholder="留空则随机端口" data-port="sopt">
@@ -509,8 +514,11 @@
         </div>
       </div>
       <div class="row"><label>Reality 域名 <span class="pill">reym</span></label><input id="reym" type="text"
-                                                                                        placeholder="留空则默认apple.com"/>
-      </div>
+                                                                                        placeholder="选择Reality相关协议后可用，留空默认apple.com"
+                                                                                        disabled/></div>
+      <div class="row"><label>Hysteria2端口跳跃 <span class="pill">hyjpt</span></label><input id="hyjpt" type="text"
+                                                                                              placeholder="支持多个范围端口与单端口混用(空格间隔)，例：123:456 789"
+                                                                                              disabled/></div>
       <div class="row"><label>CF解析IP的域名<span class="pill">cdnym</span></label><input id="cdnym" type="text"
                                                                                           placeholder="Vmess-ws、Vless-xhttp/ws-enc启用80、回源CDN时可用"
                                                                                           disabled/></div>
@@ -554,14 +562,33 @@
       </div>
     </section>
 
+    <section class="card subscription-links">
+      <h2>Clash/Mihomo、Singbox、聚合单节点的订阅链接设置：</h2>
+      <div class="row">
+        <label>启用订阅链接 <span class="pill">sub</span></label>
+        <select id="sub">
+          <option value="">默认 关闭 (仅显示单节点分享链接)</option>
+          <option value="y">开启</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>订阅链接密码 <span class="pill">subid</span></label>
+        <input id="subid" type="text" placeholder="留空则默认uuid路径密码" disabled/>
+      </div>
+      <div class="row">
+        <label>订阅链接端口 <span class="pill">subpt</span></label>
+        <input id="subpt" type="text" placeholder="留空则随机端口" disabled/>
+      </div>
+    </section>
+
     <section class="card argo-tunnel">
       <h2>Argo临时/固定隧道CDN：</h2>
       <div class="row">
         <label>启用Argo隧道开关 <span class="pill">argo</span></label>
         <select id="argoSelect">
           <option value="">默认 关闭</option>
-          <option value="vwpt">启用Vless-ws-enc的Argo隧道</option>
-          <option value="vmpt">启用Vmess-ws的Argo隧道</option>
+          <option value="vwpt">启用主协议Vless-ws-enc的Argo隧道</option>
+          <option value="vmpt">启用主协议Vmess-ws的Argo隧道</option>
         </select>
       </div>
       <div class="row"><label>固定隧道CF域名 <span class="pill">agn</span></label><input id="agn" type="text"
@@ -570,6 +597,9 @@
       <div class="row"><label>固定隧道Token <span class="pill">agk</span></label><input id="agk" type="text"
                                                                                         placeholder="Zero Trust已提取ey开头的秘钥，留空则临时隧道"
                                                                                         disabled></div>
+      <div class="row"><label>Argo订阅优选IP域名 <span class="pill">cfip</span></label><input id="cfip" type="text"
+                                                                                              placeholder="可选填两个优选IP域名(空格间隔)，留空则默认优选域名"
+                                                                                              disabled></div>
     </section>
 
     <section class="card shortcut-commands-card">
@@ -580,13 +610,14 @@
         <button class="command-button" data-command="upx">升级Xray内核：upx</button>
         <button class="command-button" data-command="ups">升级Singbox内核：ups</button>
         <button class="command-button" data-command="res">重启脚本命令：res</button>
-        <button class="command-button" data-command="rep">调整变量、更新脚本命令（注:变量设置完成后再点击）：rep</button>
+        <button class="command-button" data-command="rep">调整变量、更新脚本命令（注:所有变量设置完成后再点击）：rep
+        </button>
       </div>
     </section>
 
     <section class="card out">
       <div class="tabs">
-        <h2>进入服务器的SSH界面，复制下方生成的一键脚本命令，回车一次搞定</h2>
+        <h2>复制下方命令到服务器SSH回车一次即可。建议保存该命令，后续可粘贴回这里直接修改配置。</h2>
       </div>
       <div class="command-type-row">
         <label>命令类型选择：</label>
@@ -625,15 +656,28 @@
     const WGET = 'bash <(wget -qO- https://raw.githubusercontent.com/loganoxo/argosbx/main/argosbx.sh)';
 
     const protoKeys = ['sopt', 'vmpt', 'vlpt', 'xhpt', 'vxpt', 'vwpt', 'arpt', 'anpt', 'hypt', 'tupt', 'sspt'];
-    const optIds = ['warp', 'ippz', 'uuid', 'reym', 'cdnym', 'name', 'oap'];
+    const optIds = ['warp', 'ippz', 'uuid', 'reym', 'hyjpt', 'cdnym', 'name', 'oap', 'sub', 'subid', 'subpt'];
 
     const argoSelect = document.getElementById('argoSelect');
     const agn = document.getElementById('agn');
     const agk = document.getElementById('agk');
+    const cfip = document.getElementById('cfip');
+    const sub = document.getElementById('sub');
+    const subid = document.getElementById('subid');
+    const subpt = document.getElementById('subpt');
+
     const vmessWsCheckbox = document.querySelector('[data-proto="vmpt"]');
     const vlessWsVCheckbox = document.querySelector('[data-proto="vwpt"]');
     const vlessXhttpCheckbox = document.querySelector('[data-proto="vxpt"]');
+    const vlessTcpRealityCheckbox = document.querySelector('[data-proto="vlpt"]');
+    const vlessXhttpRealityCheckbox = document.querySelector('[data-proto="xhpt"]');
+    const anyRealityCheckbox = document.querySelector('[data-proto="arpt"]');
+    const hy2Checkbox = document.querySelector('[data-proto="hypt"]');
+
+    const reymInput = document.getElementById('reym');
+    const hyjptInput = document.getElementById('hyjpt');
     const cdnymInput = document.getElementById('cdnym');
+
     const output = document.getElementById('output');
     const allInputs = document.querySelectorAll('input, select');
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -644,6 +688,8 @@
     const uuidInput = document.getElementById('uuid');
     const themeSwitchCheckbox = document.getElementById('theme-switch-checkbox');
     const commandTypeRadios = document.querySelectorAll('input[name="commandType"]');
+
+    let isUpdatingFromOutput = false;
 
     function initTheme() {
       const isLightMode = localStorage.getItem('theme') === 'light';
@@ -666,8 +712,19 @@
       if (!isEnabled) {
         agn.value = '';
         agk.value = '';
+        cfip.value = '';
       }
-      [agn, agk].forEach(i => i.disabled = !isEnabled);
+      [agn, agk, cfip].forEach(i => i.disabled = !isEnabled);
+    }
+
+    function updateSubState() {
+      const isEnabled = sub.value === 'y';
+      if (!isEnabled) {
+        subid.value = '';
+        subpt.value = '';
+      }
+      [subid, subpt].forEach(i => i.disabled = !isEnabled);
+      render();
     }
 
     function resetForm(preserveIppz = false) {
@@ -684,67 +741,64 @@
       oapSelect.value = '';
       document.getElementById('uuid').value = '';
       document.getElementById('reym').value = '';
+      document.getElementById('hyjpt').value = '';
       document.getElementById('name').value = '';
+      sub.value = '';
+      updateSubState();
       argoSelect.value = '';
       updateArgoState('');
-      updateCdnymState();
+      updateDynamicInputs();
     }
 
-    function updateCdnymState() {
-      const isAnyProtocolChecked = vmessWsCheckbox.checked || vlessXhttpCheckbox.checked || vlessWsVCheckbox.checked;
+    function updateDynamicInputs() {
+      const isCdnEnabled = vmessWsCheckbox.checked || vlessXhttpCheckbox.checked || vlessWsVCheckbox.checked;
+      cdnymInput.disabled = !isCdnEnabled;
+      if (!isCdnEnabled) cdnymInput.value = '';
 
-      cdnymInput.disabled = !isAnyProtocolChecked;
+      const isRealityEnabled = vlessTcpRealityCheckbox.checked || vlessXhttpRealityCheckbox.checked || anyRealityCheckbox.checked;
+      reymInput.disabled = !isRealityEnabled;
+      if (!isRealityEnabled) reymInput.value = '';
 
-      if (!isAnyProtocolChecked) {
-        cdnymInput.value = '';
-      }
+      const isHy2Enabled = hy2Checkbox.checked;
+      hyjptInput.disabled = !isHy2Enabled;
+      if (!isHy2Enabled) hyjptInput.value = '';
+
       render();
     }
+
+    sub.addEventListener('change', updateSubState);
 
     argoSelect.addEventListener('change', () => {
       const argoValue = argoSelect.value;
       const isEnabled = argoValue !== '';
-
-      [agn, agk].forEach(i => i.disabled = !isEnabled);
-
+      [agn, agk, cfip].forEach(i => i.disabled = !isEnabled);
       if (argoValue === 'vwpt') {
         vlessWsVCheckbox.checked = true;
       } else if (argoValue === 'vmpt') {
         vmessWsCheckbox.checked = true;
       }
-
       if (!isEnabled) {
         agn.value = '';
         agk.value = '';
+        cfip.value = '';
       }
-
-      updateCdnymState();
+      updateDynamicInputs();
       render();
     });
 
-    vmessWsCheckbox.addEventListener('change', () => {
-      if (!vmessWsCheckbox.checked && argoSelect.value === 'vmpt') {
-        argoSelect.value = '';
-        updateArgoState('');
-      }
-      updateCdnymState();
-      render();
+    [vmessWsCheckbox, vlessWsVCheckbox, vlessXhttpCheckbox, vlessTcpRealityCheckbox, vlessXhttpRealityCheckbox, anyRealityCheckbox, hy2Checkbox].forEach(ck => {
+      ck.addEventListener('change', () => {
+        if (!vlessWsVCheckbox.checked && argoSelect.value === 'vwpt') {
+          argoSelect.value = '';
+          updateArgoState('');
+        }
+        if (!vmessWsCheckbox.checked && argoSelect.value === 'vmpt') {
+          argoSelect.value = '';
+          updateArgoState('');
+        }
+        updateDynamicInputs();
+      });
     });
-
-    vlessWsVCheckbox.addEventListener('change', () => {
-      if (!vlessWsVCheckbox.checked && argoSelect.value === 'vwpt') {
-        argoSelect.value = '';
-        updateArgoState('');
-      }
-      updateCdnymState();
-      render();
-    });
-
-    vlessXhttpCheckbox.addEventListener('change', () => {
-      updateCdnymState();
-      render();
-    });
-
 
     document.querySelectorAll('[data-port]').forEach(inp => {
       inp.addEventListener('input', () => {
@@ -754,10 +808,7 @@
         if (inp.value.trim() !== '' && !ck.checked) {
           ck.checked = true;
         }
-
-        if (key === 'vmpt' || key === 'vwpt' || key === 'vxpt') {
-          updateCdnymState();
-        }
+        updateDynamicInputs();
         render();
       });
     });
@@ -771,10 +822,7 @@
             pt.value = '';
           }
         }
-
-        if (ck.getAttribute('data-proto') === 'vmpt' || ck.getAttribute('data-proto') === 'vxpt' || ck.getAttribute('data-proto') === 'vwpt') {
-          updateCdnymState();
-        }
+        updateDynamicInputs();
         render();
       });
     });
@@ -809,14 +857,13 @@
       const argoValue = argoSelect.value;
       if (argoValue !== '') {
         m['argo'] = argoValue;
-
         const _agn = (agn.value || '').trim();
         const _agk = (agk.value || '').trim();
-
+        const _cfip = (cfip.value || '').trim();
         if (!agn.disabled && _agn) m['agn'] = _agn;
         if (!agk.disabled && _agk) m['agk'] = _agk;
+        if (!cfip.disabled && _cfip) m['cfip'] = _cfip;
       }
-
       return m;
     }
 
@@ -826,12 +873,13 @@
       protoKeys.forEach(k => {
         if (keys.includes(k)) ordered.push(k);
       });
-      ['warp', 'uuid', 'reym', 'cdnym', 'name', 'ippz'].forEach(k => {
+      ['warp', 'uuid', 'reym', 'hyjpt', 'cdnym', 'name', 'ippz', 'sub', 'subid', 'subpt'].forEach(k => {
         if (keys.includes(k)) ordered.push(k);
       });
       if (keys.includes('argo')) ordered.push('argo');
       if (keys.includes('agn')) ordered.push('agn');
       if (keys.includes('agk')) ordered.push('agk');
+      if (keys.includes('cfip')) ordered.push('cfip');
       if (keys.includes('oap')) ordered.push('oap');
       keys.forEach(k => {
         if (!ordered.includes(k)) ordered.push(k);
@@ -848,14 +896,86 @@
     }
 
     function render() {
+      if (isUpdatingFromOutput) return;
       const m = collectVars();
       const vars = toBashVars(m);
       const selectedCommand = document.querySelector('input[name="commandType"]:checked').value === 'curl' ? CURL : WGET;
       output.value = (vars ? vars + ' ' : '') + selectedCommand;
     }
 
+    function parseAndFillOutput() {
+      const text = output.value.trim();
+      if (!text) return;
+
+      isUpdatingFromOutput = true;
+
+      if (text.includes('wget')) {
+        document.querySelector('input[name="commandType"][value="wget"]').checked = true;
+      } else {
+        document.querySelector('input[name="commandType"][value="curl"]').checked = true;
+      }
+
+      const regex = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"']+))/g;
+      const params = {};
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        const key = match[1];
+        const val = match[2] !== undefined ? match[2] : (match[3] !== undefined ? match[3] : match[4]);
+        params[key] = val;
+      }
+
+      protoKeys.forEach(k => {
+        const ck = document.querySelector(`[data-proto="${k}"]`);
+        const pt = document.querySelector(`[data-port="${k}"]`);
+        if (k in params) {
+          if (ck) ck.checked = true;
+          if (pt) pt.value = params[k];
+        } else {
+          if (ck) ck.checked = false;
+          if (pt) pt.value = '';
+        }
+      });
+
+      if ('sub' in params) {
+        sub.value = params['sub'];
+      } else {
+        sub.value = '';
+      }
+      [subid, subpt].forEach(i => i.disabled = (sub.value !== 'y'));
+
+      if ('argo' in params) {
+        argoSelect.value = params['argo'];
+      } else {
+        argoSelect.value = '';
+      }
+      [agn, agk, cfip].forEach(i => i.disabled = (argoSelect.value === ''));
+
+      const isCdnEnabled = params['vmpt'] !== undefined || params['vxpt'] !== undefined || params['vwpt'] !== undefined;
+      cdnymInput.disabled = !isCdnEnabled;
+      const isRealityEnabled = params['vlpt'] !== undefined || params['xhpt'] !== undefined || params['arpt'] !== undefined;
+      reymInput.disabled = !isRealityEnabled;
+      hyjptInput.disabled = (params['hypt'] === undefined);
+
+      const allIds = [...optIds, 'agn', 'agk', 'cfip'];
+      allIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (id in params) {
+            el.value = params[id];
+          } else {
+            el.value = '';
+          }
+        }
+      });
+
+      isUpdatingFromOutput = false;
+    }
+
+    output.addEventListener('input', parseAndFillOutput);
+
     initTheme();
-    updateCdnymState();
+    updateDynamicInputs();
+    updateSubState();
     render();
 
     allInputs.forEach(el => {
@@ -902,8 +1022,11 @@
       }
     });
 
+    // 修改此处的重置按钮逻辑：彻底清空表单组件，同时彻底清空脚本输出栏
     document.getElementById('reset').addEventListener('click', () => {
-      location.reload();
+      resetForm(false);
+      output.value = '';
+      showToast('已清空全部配置');
     });
 
     function showToast(msg) {
@@ -926,9 +1049,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
-
