@@ -31,6 +31,9 @@ else
     exit
   }
 fi
+export logan_ym=${logan_ym:-''}
+export logan_private_key=${logan_private_key:-''}
+export logan_cert=${logan_cert:-''}
 export uuid=${uuid:-''}
 export port_vl_re=${vlpt:-''}
 export port_vm_ws=${vmpt:-''}
@@ -98,10 +101,19 @@ if [ "$1" != "del" ]; then
 fi
 
 # ========= acme证书
-logan_ym=$(cat /root/ygkkkca/ca.log 2>/dev/null)
-logan_private_key='/root/ygkkkca/private.key'
-logan_cert='/root/ygkkkca/cert.crt'
-logan_ins=0
+if [ -n "$logan_ym" ]; then
+  if [ ! -f "$logan_private_key" ] || [ ! -f "$logan_cert" ]; then
+    echo "域名的证书不存在" && exit
+  fi
+  mkdir -p /root/ygkkkca
+  echo "$logan_ym" >"/root/ygkkkca/ca.log"
+  logan_ins=0
+else
+  logan_ym=$(cat "/root/ygkkkca/ca.log" 2>/dev/null)
+  logan_private_key='/root/ygkkkca/private.key'
+  logan_cert='/root/ygkkkca/cert.crt'
+  logan_ins=0
+fi
 
 if [ -z "$logan_ym" ] || [ ! -f "$logan_private_key" ] || [ ! -f "$logan_cert" ]; then
   logan_ym='www.bing.com'
@@ -1689,10 +1701,10 @@ cleandel() {
       rc-update del "$svc" default >/dev/null 2>&1
     done
     rm -rf /etc/init.d/{sing-box,xray,argo} /etc/local.d/alpineargosbx.start /etc/local.d/alpinesubsbx.start
-#    iptables -t nat -F PREROUTING >/dev/null 2>&1
-#    netfilter-persistent save >/dev/null 2>&1
-#    rc-service iptables save >/dev/null 2>&1
-#    rc-service ip6tables save >/dev/null 2>&1
+    #    iptables -t nat -F PREROUTING >/dev/null 2>&1
+    #    netfilter-persistent save >/dev/null 2>&1
+    #    rc-service iptables save >/dev/null 2>&1
+    #    rc-service ip6tables save >/dev/null 2>&1
   fi
 }
 xrestart() {
@@ -1844,9 +1856,9 @@ if ! find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -
     echo "请稍后…………"
     kill -15 $(pgrep -f 'websbx' 2>/dev/null) >/dev/null 2>&1
     mkdir -p $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"
-#    ln -sf $HOME/agsbx/clmi.yaml $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/clmi.yaml
-#    ln -sf $HOME/agsbx/sbox.json $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/sbox.json
-#    ln -sf $HOME/agsbx/jhsub.txt $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/jhsub.txt
+    #    ln -sf $HOME/agsbx/clmi.yaml $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/clmi.yaml
+    #    ln -sf $HOME/agsbx/sbox.json $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/sbox.json
+    #    ln -sf $HOME/agsbx/jhsub.txt $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/jhsub.txt
     ln -sf $HOME/agsbx/logan-nodes.txt $HOME/websbx/"$(cat $HOME/agsbx/subtoken.log 2>/dev/null)"/logan-nodes.txt
     if command -v apk >/dev/null 2>&1; then
       busybox-extras httpd -f -p "$(cat $HOME/agsbx/subport.log 2>/dev/null)" -h $HOME/websbx >/dev/null 2>&1 &
