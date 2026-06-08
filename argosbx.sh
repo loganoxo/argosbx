@@ -105,13 +105,12 @@ if [ -n "$logan_ym" ]; then
   if [ ! -f "$logan_private_key" ] || [ ! -f "$logan_cert" ]; then
     echo "域名的证书不存在" && exit
   fi
-  mkdir -p /root/ygkkkca
-  echo "$logan_ym" >"/root/ygkkkca/ca.log"
+  echo "$logan_ym" >"$HOME/ca.log"
   logan_ins=0
 else
-  logan_ym=$(cat "/root/ygkkkca/ca.log" 2>/dev/null)
-  logan_private_key='/root/ygkkkca/private.key'
-  logan_cert='/root/ygkkkca/cert.crt'
+  logan_ym=$(cat "$HOME/ca.log" 2>/dev/null)
+  logan_private_key='/etc/ssl/mine/key.pem'
+  logan_cert='/etc/ssl/mine/fullchain.pem'
   logan_ins=0
 fi
 
